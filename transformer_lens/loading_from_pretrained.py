@@ -240,6 +240,11 @@ OFFICIAL_MODEL_NAMES = [
     "Qwen/Qwen3-4B",
     "Qwen/Qwen3-8B",
     "Qwen/Qwen3-14B",
+    "Qwen/Qwen3-0.6B-Base",
+    "Qwen/Qwen3-1.7B-Base",
+    "Qwen/Qwen3-4B-Base",
+    "Qwen/Qwen3-8B-Base",
+    "Qwen/Qwen3-14B-Base",
     "microsoft/phi-1",
     "microsoft/phi-1_5",
     "microsoft/phi-2",
@@ -696,6 +701,11 @@ MODEL_ALIASES = {
     "Qwen/Qwen3-4B": ["qwen3-4b"],
     "Qwen/Qwen3-8B": ["qwen3-8b"],
     "Qwen/Qwen3-14B": ["qwen3-14b"],
+    "Qwen/Qwen3-0.6B-Base": ["qwen3-0.6b-base"],
+    "Qwen/Qwen3-1.7B-Base": ["qwen3-1.7b-base"],
+    "Qwen/Qwen3-4B-Base": ["qwen3-4b-base"],
+    "Qwen/Qwen3-8B-Base": ["qwen3-8b-base"],
+    "Qwen/Qwen3-14B-Base": ["qwen3-14b-base"],
     "microsoft/phi-1": ["phi-1"],
     "microsoft/phi-1_5": ["phi-1_5"],
     "microsoft/phi-2": ["phi-2"],
@@ -1354,11 +1364,13 @@ def convert_hf_model_config(model_name: str, **kwargs: Any):
     elif architecture == "Qwen3ForCausalLM":
         cfg_dict = {
             "d_model": hf_config.hidden_size,
-            "d_head": hf_config.head_dim
-            if hasattr(hf_config, "head_dim")
-            and hf_config.head_dim is not None
-            and hf_config.head_dim > 0
-            else hf_config.hidden_size // hf_config.num_attention_heads,
+            "d_head": (
+                hf_config.head_dim
+                if hasattr(hf_config, "head_dim")
+                and hf_config.head_dim is not None
+                and hf_config.head_dim > 0
+                else hf_config.hidden_size // hf_config.num_attention_heads
+            ),
             "n_heads": hf_config.num_attention_heads,
             "n_key_value_heads": (
                 hf_config.num_key_value_heads
@@ -1377,9 +1389,11 @@ def convert_hf_model_config(model_name: str, **kwargs: Any):
             "positional_embedding_type": "rotary",
             "rotary_base": int(hf_config.rope_theta),
             "rotary_adjacent_pairs": False,
-            "rotary_dim": hf_config.head_dim
-            if hasattr(hf_config, "head_dim") and hf_config.head_dim > 0
-            else hf_config.hidden_size // hf_config.num_attention_heads,
+            "rotary_dim": (
+                hf_config.head_dim
+                if hasattr(hf_config, "head_dim") and hf_config.head_dim > 0
+                else hf_config.hidden_size // hf_config.num_attention_heads
+            ),
             "tokenizer_prepends_bos": True,
             "final_rms": True,
             "gated_mlp": True,
